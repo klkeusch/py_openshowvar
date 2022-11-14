@@ -7,9 +7,8 @@ import sys
 import struct
 import random
 import socket
-import sched
 import time
-# import schedule
+
 
 from timeloop import Timeloop
 from datetime import timedelta
@@ -147,17 +146,17 @@ def run_shell(ip, port):
         print('Verbindung konnte nicht hergestellt werden.')
         import sys
         sys.exit(-1)
-    print('\nVerbunden mit KRC: ', end=' ')
+    print('\nVerbunden mit KRC:', end=' ')
     client.read('$ROBNAME[]', False)
 
     @tl.job(interval=timedelta(seconds=25))
-    def pingKRCrobot():
-        print ('Keep robot connection alive : {}'.format(time.ctime()))
+    def ping_robot():
+        print('Erhalte Verbindung zu Roboter aufrecht: {}'.format(time.ctime()))
         client.ping
     tl.start(block=False)
 
     while True:
-        data = input('\nEingabe von var_name [, var_value]\n("p" - Ping)\n("q" - Beenden)') # Input var_name [, var_value]\n(`q` for quit): ')
+        data = input('\nEingabe von var_name [, var_value]\n("p" - Ping)\n("q" - Beenden)')
         if data.lower() == 'q':
             print('Verbindung getrennt.')
             client.close()

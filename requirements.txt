@@ -1,2 +1,3 @@
-setuptools~=65.5.1
-timeloop~=1.0.2
+setuptools
+timeloop
+rich
