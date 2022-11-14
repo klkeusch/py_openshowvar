@@ -1,21 +1,30 @@
-'''
+"""
 A Python port of KUKA VarProxy client (OpenShowVar).
-'''
+"""
 
 from __future__ import print_function
 import sys
 import struct
 import random
 import socket
+import sched
+import time
+# import schedule
+
+from timeloop import Timeloop
+from datetime import timedelta
+
+tl = Timeloop()
 
 __version__ = '1.1.7'
 ENCODING = 'UTF-8'
 
 PY2 = sys.version_info[0] == 2
-if PY2: input = raw_input
+if PY2:
+    input = raw_input
 
 
-class openshowvar(object):
+class OpenShowVar(object):
     def __init__(self, ip, port):
         self.ip = ip
         self.port = port
@@ -32,21 +41,30 @@ class openshowvar(object):
             ret = sock.connect_ex((self.ip, self.port))
             return ret == 0
         except socket.error:
-            print('socket error')
+            print('Fehler im Netzwerk-Socket')
             return False
 
     can_connect = property(test_connection)
 
+    def keep_alive(self, var='$OV_PRO'):
+        self.varname = var if PY2 else var.encode(ENCODING)
+        debug = False
+        req = self._pack_read_req()
+        self._send_req(req)
+
+    ping = property(keep_alive)
+
     def read(self, var, debug=True):
         if not isinstance(var, str):
-            raise Exception('Var name is a string')
+            raise Exception('Variablenname ist ein String')  # Var name is a string')
         else:
             self.varname = var if PY2 else var.encode(ENCODING)
         return self._read_var(debug)
 
     def write(self, var, value, debug=True):
         if not (isinstance(var, str) and isinstance(value, str)):
-            raise Exception('Var name and its value should be string')
+            raise Exception(
+                'Variablenname und -wert müssen ein String sein.')  # Var name and its value should be string')
         self.varname = var if PY2 else var.encode(ENCODING)
         self.value = value if PY2 else value.encode(ENCODING)
         return self._write_var(debug)
@@ -78,13 +96,13 @@ class openshowvar(object):
         req_len = var_name_len + 3
 
         return struct.pack(
-            '!HHBH'+str(var_name_len)+'s',
+            '!HHBH' + str(var_name_len) + 's',
             self.msg_id,
             req_len,
             flag,
             var_name_len,
             self.varname
-            )
+        )
 
     def _pack_write_req(self):
         var_name_len = len(self.varname)
@@ -93,7 +111,7 @@ class openshowvar(object):
         req_len = var_name_len + 3 + 2 + value_len
 
         return struct.pack(
-            '!HHBH'+str(var_name_len)+'s'+'H'+str(value_len)+'s',
+            '!HHBH' + str(var_name_len) + 's' + 'H' + str(value_len) + 's',
             self.msg_id,
             req_len,
             flag,
@@ -101,12 +119,12 @@ class openshowvar(object):
             self.varname,
             value_len,
             self.value
-            )
+        )
 
     def _read_rsp(self, debug=False):
         if self.rsp is None: return None
         var_value_len = len(self.rsp) - struct.calcsize('!HHBH') - 3
-        result = struct.unpack('!HHBH'+str(var_value_len)+'s'+'3s', self.rsp)
+        result = struct.unpack('!HHBH' + str(var_value_len) + 's' + '3s', self.rsp)
         _msg_id, body_len, flag, var_value_len, var_value, isok = result
         if debug:
             print('[DEBUG]', result)
@@ -118,23 +136,35 @@ class openshowvar(object):
         self.sock.close()
 
 
-############### test ###############
+"""
+First draft for a console application
+"""
 
 
 def run_shell(ip, port):
-    client = openshowvar(ip, port)
+    client = OpenShowVar(ip, port)
     if not client.can_connect:
-        print('Connection error')
+        print('Verbindung konnte nicht hergestellt werden.')
         import sys
         sys.exit(-1)
-    print('\nConnected KRC Name: ', end=' ')
+    print('\nVerbunden mit KRC: ', end=' ')
     client.read('$ROBNAME[]', False)
+
+    @tl.job(interval=timedelta(seconds=25))
+    def pingKRCrobot():
+        print ('Keep robot connection alive : {}'.format(time.ctime()))
+        client.ping
+    tl.start(block=False)
+
     while True:
-        data = input('\nInput var_name [, var_value]\n(`q` for quit): ')
+        data = input('\nEingabe von var_name [, var_value]\n("p" - Ping)\n("q" - Beenden)') # Input var_name [, var_value]\n(`q` for quit): ')
         if data.lower() == 'q':
-            print('Bye')
+            print('Verbindung getrennt.')
             client.close()
             break
+        elif data.lower() == 'p':
+            print('Ping ausgefuehrt')
+            client.ping
         else:
             parts = data.split(',')
             if len(parts) == 1:
@@ -144,7 +174,15 @@ def run_shell(ip, port):
 
 
 if __name__ == '__main__':
-    ip = input('IP Address: ')
+    ip = input('IP-Adresse des smartPAD: ')
     port = input('Port: ')
     run_shell(ip, int(port))
 
+'''
+!    Big-ending byte ordering will be used
+H    self.msg_id will be packed as a two-byte unsigned short
+H    req_len will be packed as above
+B    flag will be packed as a one-byte unsigned char
+H    var_name_len will be packed as a two-byte unsigned short
+12s  self.varname will be packed as a 12-byte string
+'''

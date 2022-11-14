@@ -11,7 +11,7 @@ Supports 2.6+ / 3.3+, tested at 2.7.11 and 3.6.3.
 Install
 ========
 
-On PYPI: `<https://pypi.python.org/pypi/py-openshowvar>`_
+On PYPI: `<https://pypi.python.org/pypi/py-OpenShowVar>`_
 
 ``pip install py_openshowvar``
 
@@ -22,8 +22,8 @@ Module usage:
 
 .. code-block:: python
 
-    >>> from py_openshowvar import openshowvar
-    >>> client = openshowvar('192.168.19.132', 7001)
+    >>> from py_openshowvar import OpenShowVar
+    >>> client = OpenShowVar('192.168.19.132', 7001)
     >>> client.can_connect
     True
     >>> ov = client.read('$OV_PRO', debug=True)
