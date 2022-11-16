@@ -136,7 +136,6 @@ class OpenShowVar(object):
             return var_value
 
     def close(self):
-        f.close()
         time.sleep(5)
         self.sock.close()
 
