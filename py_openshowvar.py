@@ -214,7 +214,7 @@ def run_shell(ip, port):
                     parts = data.split(',')
                     if len(parts) == 1:
                         extracted_var_value = client.read(data.strip(), False)
-                        print(extracted_var_value.strip(" 'b"))
+                        print(extracted_var_value.strip)
                         f.write("Abgefragte Variable: {}, Wert: {} um {}\n".format(parts, extracted_var_value,
                                                                                    time.ctime()))
                     else:
