@@ -15,6 +15,8 @@ from datetime import timedelta
 
 tl = Timeloop()
 
+# f = open("kuka_output_{}.txt", "a" )
+
 __version__ = '1.1.7'
 ENCODING = 'UTF-8'
 
@@ -32,6 +34,7 @@ class OpenShowVar(object):
         try:
             self.sock.connect((self.ip, self.port))
         except socket.error:
+            print('Keine Antwort erhalten.')
             pass
 
     def test_connection(self):
@@ -121,7 +124,8 @@ class OpenShowVar(object):
         )
 
     def _read_rsp(self, debug=False):
-        if self.rsp is None: return None
+        if self.rsp is None:
+            return None
         var_value_len = len(self.rsp) - struct.calcsize('!HHBH') - 3
         result = struct.unpack('!HHBH' + str(var_value_len) + 's' + '3s', self.rsp)
         _msg_id, body_len, flag, var_value_len, var_value, isok = result
@@ -132,6 +136,8 @@ class OpenShowVar(object):
             return var_value
 
     def close(self):
+        f.close()
+        time.sleep(5)
         self.sock.close()
 
 
@@ -142,39 +148,43 @@ First draft for a console application
 
 def run_shell(ip, port):
     client = OpenShowVar(ip, port)
-    if not client.can_connect:
-        print('Verbindung konnte nicht hergestellt werden.')
-        import sys
-        sys.exit(-1)
-    print('\nVerbunden mit KRC:', end=' ')
-    client.read('$ROBNAME[]', False)
+    filename = 'kuka_output.txt'
+    with open(filename, 'a') as f:
 
-    @tl.job(interval=timedelta(seconds=25))
-    def ping_robot():
-        print('Erhalte Verbindung zu Roboter aufrecht: {}'.format(time.ctime()))
-        client.ping
-    tl.start(block=False)
+        if not client.can_connect:
+            print('Verbindung konnte nicht hergestellt werden.')
+            import sys
+            sys.exit(-1)
+        print('\nVerbunden mit KRC:', end=' ')
+        client.read('$ROBNAME[]', False)
 
-    while True:
-        data = input('\nEingabe von var_name [, var_value]\n("p" - Ping)\n("q" - Beenden)')
-        if data.lower() == 'q':
-            print('Verbindung getrennt.')
-            client.close()
-            break
-        elif data.lower() == 'p':
-            print('Ping ausgefuehrt')
+        @tl.job(interval=timedelta(seconds=25))
+        def ping_robot():
+            print('Erhalte Verbindung zu Roboter aufrecht: {}'.format(time.ctime()))
+            f.write("ping jetzt {}".format(time.ctime()))
             client.ping
-        else:
-            parts = data.split(',')
-            if len(parts) == 1:
-                client.read(data.strip(), True)
+        tl.start(block=False)
+
+        while True:
+            data = input('\nEingabe von var_name [, var_value]\n("p" - Ping)\n("q" - Beenden)')
+            if data.lower() == 'q':
+                print('Verbindung getrennt.')
+                client.close()
+                break
+            elif data.lower() == 'p':
+                print('Ping ausgefuehrt')
+                client.ping
             else:
-                client.write(parts[0], parts[1].lstrip(), True)
+                parts = data.split(',')
+                if len(parts) == 1:
+                    client.read(data.strip(), True)
+                else:
+                    client.write(parts[0], parts[1].lstrip(), True)
 
 
 if __name__ == '__main__':
-    ip = input('IP-Adresse des smartPAD: ')
-    port = input('Port: ')
+    ip = "172.31.1.147" # input('IP-Adresse des smartPAD: ')
+    port = "7000" # input('Port: ')
     run_shell(ip, int(port))
 
 '''
