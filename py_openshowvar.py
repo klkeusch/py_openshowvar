@@ -194,8 +194,8 @@ def run_shell(ip, port):
                 cls()
             elif data.lower() == 'h':
                 print('\nAbfrage von Variablen mit Eingabe von: "$OV_PRO" bzw. "SCHICHT"\n')
-                print('\nSetzen des Wertes einer Variable mit: "<var_name>, <var_value>", z. B. "SCHICHT, 80"\n')
-                print('\nAlle Vorgaenge werden in {}"\n'.format(filename), ' im Programmordner gesichert.')
+                print('Setzen des Wertes einer Variable mit: "<var_name>, <var_value>", z. B. "SCHICHT, 80"\n')
+                print('Alle Vorgaenge werden in der Datei "{}"'.format(filename), ' im Programmordner gesichert.\n')
                 input_help = input('"b" - Beenden der Hilfe\n')
                 if input_help.lower() =='b':
                     cls()
