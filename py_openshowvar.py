@@ -171,15 +171,16 @@ def run_shell(ip, port):
         tl.start(block=False)
 
         while True:
-            data = input('\n============================================================\n'
-                         '***| Menue |***\n'
-                         '============================================================\n'
-                         '("var_name [, var_value]" - Eingabe der gewuenschten Variable)\n'
-                         '("c" - Ausgabefenster leeren)\n'
+            data = input('\n=================================================================\n'
+                         '============================| Menue |============================\n'
+                         '=================================================================\n'
+                         '("var_name [, var_value]" - Abfrage Variable, var_value: Wert setzen)\n'
+                         '("h" - Hilfe anzeigen)\n'
                          '("p" - Ping)\n'
                          '("pm" - Zeige letzten automatischen Ping)\n'
+                         '("c" - Ausgabefenster leeren)\n'
                          '("q" - Beenden)\n'
-                         '============================================================\n'
+                         '=================================================================\n'
                          'Eingabe: ')
 
             if data.lower() == 'q':
@@ -191,6 +192,13 @@ def run_shell(ip, port):
                 print('\nAusgabefenster leeren...\n')
                 time.sleep(1)
                 cls()
+            elif data.lower() == 'h':
+                print('\nAbfrage von Variablen mit Eingabe von: "$OV_PRO" bzw. "SCHICHT"\n')
+                print('\nSetzen des Wertes einer Variable mit: "<var_name>, <var_value>", z. B. "SCHICHT, 80"\n')
+                print('\nAlle Vorgaenge werden in {}"\n'.filename, ' im Programmordner gesichert.')
+                input_help = input('"b" - Beenden der Hilfe\n')
+                if input_help.lower() =='b':
+                    cls()
             elif data.lower() == 'p':
                 print('\nPing ausgefuehrt\n')
                 f.write("Manueller Ping ausgeführt: {}\n".format(time.ctime()))
