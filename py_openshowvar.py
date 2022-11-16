@@ -199,7 +199,8 @@ def run_shell(ip, port):
                     cls()
                     print('\nAbfrage von Variablen mit Eingabe von: "$OV_PRO" bzw. "SCHICHT"\n')
                     print('Setzen des Wertes einer Variable mit: "<var_name>, <var_value>", z. B. "SCHICHT, 80"\n')
-                    print('Alle Vorgaenge und Werte werden in der Datei "{}"'.format(filename), 'im Programmordner gesichert.\n')
+                    print('Alle Vorgaenge und Werte werden in der Datei "{}"'.format(filename),
+                          'im Programmordner gesichert.\n')
                     input_help = input('("b" - Beenden der Hilfe)\n')
                     if input_help.lower() == 'b':
                         cls()
@@ -213,15 +214,16 @@ def run_shell(ip, port):
                     parts = data.split(',')
                     if len(parts) == 1:
                         extracted_var_value = client.read(data.strip(), False)
-                        f.write("Abgefragte Variable: {}, Wert: {} um {}\n".format(parts[0], extracted_var_value, time.ctime()))
+                        print(extracted_var_value)
+                        f.write("Abgefragte Variable: {}, Wert: {} um {}\n".format(parts[0], extracted_var_value,
+                                                                                   time.ctime()))
                     else:
                         client.write(parts[0], parts[1].lstrip(), False)
                         print("\nWert von: {} auf{} gesetzt um {}\n".format(parts[0], parts[1], time.ctime()))
                         f.write("Wert von: {} auf{} gesetzt um {}\n".format(parts[0], parts[1], time.ctime()))
 
 
-
 if __name__ == '__main__':
-    ip = input('IP-Adresse: ')
-    port = input('Port: ')
+    ip = "172.31.1.147" # input('IP-Adresse: ')
+    port = "7000" # input('Port: ')
     run_shell(ip, int(port))
