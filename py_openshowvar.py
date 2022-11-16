@@ -59,14 +59,14 @@ class OpenShowVar(object):
 
     ping = property(keep_alive)
 
-    def read(self, var, debug=True):
+    def read(self, var, debug=False): # debug true -> false kk
         if not isinstance(var, str):
             raise Exception('Variablenname ist ein String')  # Var name is a string')
         else:
             self.varname = var if PY2 else var.encode(ENCODING)
         return self._read_var(debug)
 
-    def write(self, var, value, debug=True):
+    def write(self, var, value, debug=False): # debug true -> false kk
         if not (isinstance(var, str) and isinstance(value, str)):
             raise Exception(
                 'Variablenname und -wert müssen ein String sein.')  # Var name and its value should be string')
