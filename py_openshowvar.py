@@ -158,7 +158,7 @@ def run_shell(ip, port):
             print('Verbindung konnte nicht hergestellt werden.')
             import sys
             sys.exit(-1)
-        with open(filename_connection) as fc:
+        with open(filename_connection, 'a') as fc:
             client.read('$ROBNAME[]', False)
             print('\nVerbunden mit KRC: {}:{}'.format(ip, port), end=' ')
             fc.write('\nVerbunden mit KRC: {}:{} um {}\n'.format(ip, port, time.ctime()))
