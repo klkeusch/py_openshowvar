@@ -148,12 +148,11 @@ First draft for a console application
 
 
 def run_shell(ip, port):
+    cls()
     client = OpenShowVar(ip, port)
-
     filename = 'kuka_py_osv_log.txt'
 
     with open(filename, 'a') as f:
-
         if not client.can_connect:
             print('Verbindung konnte nicht hergestellt werden.')
             import sys
