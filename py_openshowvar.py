@@ -212,8 +212,8 @@ def run_shell(ip, port):
                 else:
                     parts = data.split(',')
                     if len(parts) == 1:
-                        client.read(data.strip(), False)
-                        f.write("Abgefragte Variable: {}, Wert: {} um {}\n".format(parts[0], parts[1], time.ctime()))
+                        extracted_var_value = client.read(data.strip(), False)
+                        f.write("Abgefragte Variable: {}, Wert: {} um {}\n".format(parts[0], extracted_var_value.strip("'b").encode(), time.ctime()))
                     else:
                         client.write(parts[0], parts[1].lstrip(), False)
                         print("\nWert von: {} auf {} gesetzt um {}\n".format(parts[0], parts[1], time.ctime()))
