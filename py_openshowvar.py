@@ -198,8 +198,8 @@ def run_shell(ip, port):
                 print('Setzen des Wertes einer Variable mit: "<var_name>, <var_value>", z. B. "SCHICHT, 80"\n')
                 print('Alle Vorgaenge und Werte werden in der Datei "{}"'.format(filename), 'im Programmordner gesichert.\n')
                 input_help = input('("b" - Beenden der Hilfe)\n')
-                if input_help.lower() == 'b':
-                    cls()
+                while input_help is not 'b':
+                    # do nothing
             elif data.lower() == 'p':
                 print('\nPing ausgefuehrt\n')
                 f.write("Manueller Ping ausgeführt: {}\n".format(time.ctime()))
