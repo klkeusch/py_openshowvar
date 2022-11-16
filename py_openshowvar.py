@@ -136,7 +136,7 @@ class OpenShowVar(object):
             return var_value
 
     def close(self):
-        time.sleep(5)
+        time.sleep(2)
         self.sock.close()
 
 
@@ -160,7 +160,6 @@ def run_shell(ip, port):
         @tl.job(interval=timedelta(seconds=25))
         def ping_robot():
             print('Erhalte Verbindung zu Roboter aufrecht: {}'.format(time.ctime()))
-            f.write("ping jetzt {}".format(time.ctime()))
             client.ping
         tl.start(block=False)
 
@@ -172,6 +171,7 @@ def run_shell(ip, port):
                 break
             elif data.lower() == 'p':
                 print('Ping ausgefuehrt')
+                f.write("ping jetzt {}".format(time.ctime()))
                 client.ping
             else:
                 parts = data.split(',')
