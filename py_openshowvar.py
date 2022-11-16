@@ -212,12 +212,12 @@ def run_shell(ip, port):
                 else:
                     parts = data.split(',')
                     if len(parts) == 1:
-                        extracted_var_value = client.read(data.strip(), False)
-                        print_var_value = extracted_var_value.strip("b'").encode()
-                        f.write("Abgefragte Variable: {}, Wert: {} um {}\n".format(data, print_var_value, time.ctime()))
+                        client.read(data.strip(), False)
+                        f.write("Abgefragte Variable: {}, Wert: {} um {}\n".format(parts[0], parts[1], time.ctime()))
                     else:
-                        writable_var_value = client.write(parts[0], parts[1].lstrip(), False)
-                        f.write("Wert von: {} auf {} gesetzt um {}\n".format(data, writable_var_value.encode(), time.ctime()))
+                        client.write(parts[0], parts[1].lstrip(), False)
+                        print("\nWert von: {} auf {} gesetzt um {}\n".format(parts[0], parts[1], time.ctime()))
+                        f.write("Wert von: {} auf {} gesetzt um {}\n".format(parts[0], parts[1], time.ctime()))
 
 
 
