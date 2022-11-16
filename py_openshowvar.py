@@ -171,16 +171,16 @@ def run_shell(ip, port):
         tl.start(block=False)
 
         while True:
-            data = input('\n=================================================================\n'
-                         '============================| Menue |============================\n'
-                         '=================================================================\n'
+            data = input('\n======================================================================\n'
+                         '============================| Menue |=================================\n'
+                         '======================================================================\n'
                          '("var_name [, var_value]" - Abfrage Variable, var_value: Wert setzen)\n'
                          '("h" - Hilfe anzeigen)\n'
                          '("p" - Ping)\n'
                          '("pm" - Zeige letzten automatischen Ping)\n'
                          '("c" - Ausgabefenster leeren)\n'
                          '("q" - Beenden)\n'
-                         '=================================================================\n'
+                         '======================================================================\n'
                          'Eingabe: ')
 
             if data.lower() == 'q':
@@ -198,7 +198,7 @@ def run_shell(ip, port):
                 print('Setzen des Wertes einer Variable mit: "<var_name>, <var_value>", z. B. "SCHICHT, 80"\n')
                 print('Alle Vorgaenge und Werte werden in der Datei "{}"'.format(filename), 'im Programmordner gesichert.\n')
                 input_help = input('("b" - Beenden der Hilfe)\n')
-                if input_help.lower() =='b':
+                if input_help.lower() == 'b':
                     cls()
             elif data.lower() == 'p':
                 print('\nPing ausgefuehrt\n')
