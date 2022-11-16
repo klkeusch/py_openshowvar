@@ -147,7 +147,9 @@ First draft for a console application
 
 def run_shell(ip, port):
     client = OpenShowVar(ip, port)
-    filename = 'kuka_output.txt'
+
+    filename = 'kuka_py_osv_log.txt'
+
     with open(filename, 'a') as f:
 
         if not client.can_connect:
@@ -161,22 +163,25 @@ def run_shell(ip, port):
         def ping_robot():
             print('Erhalte Verbindung zu Roboter aufrecht: {}'.format(time.ctime()))
             client.ping
+            f.write("Automatischer Ping ausgeführt: {}\n".format(time.ctime()))
         tl.start(block=False)
 
         while True:
-            data = input('\nEingabe von var_name [, var_value]\n("p" - Ping)\n("q" - Beenden)')
+            data = input('\nEingabe von var_name [, var_value]\n("p" - Ping)\n("q" - Beenden)\n')
             if data.lower() == 'q':
-                print('Verbindung getrennt.')
+                print('\nVerbindung getrennt.\n')
+                f.write("Verbindung getrennt: {}\n".format(time.ctime()))
                 client.close()
                 break
             elif data.lower() == 'p':
-                print('Ping ausgefuehrt')
-                f.write("ping jetzt {}".format(time.ctime()))
+                print('\nPing ausgefuehrt\n')
+                f.write("Manueller Ping ausgeführt: {}\n".format(time.ctime()))
                 client.ping
             else:
                 parts = data.split(',')
                 if len(parts) == 1:
                     client.read(data.strip(), True)
+                    f.write("Manueller Ping ausgeführt: {}\n".format(time.ctime()))
                 else:
                     client.write(parts[0], parts[1].lstrip(), True)
 
