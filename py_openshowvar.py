@@ -198,8 +198,8 @@ def run_shell(ip, port):
                 print('Setzen des Wertes einer Variable mit: "<var_name>, <var_value>", z. B. "SCHICHT, 80"\n')
                 print('Alle Vorgaenge und Werte werden in der Datei "{}"'.format(filename), 'im Programmordner gesichert.\n')
                 input_help = input('("b" - Beenden der Hilfe)\n')
-                while input_help is not 'b':
-                    # do nothing
+                if input_help.lower() == 'b':
+                    cls()
             elif data.lower() == 'p':
                 print('\nPing ausgefuehrt\n')
                 f.write("Manueller Ping ausgeführt: {}\n".format(time.ctime()))
@@ -207,10 +207,10 @@ def run_shell(ip, port):
             elif data.lower() == 'pm':
                 print(ping_robot())
             else:
+                f.write("Benutzereingabe: {} um {}\n".format(data, time.ctime()))
                 parts = data.split(',')
                 if len(parts) == 1:
                     client.read(data.strip(), True)
-                    f.write("Manueller Ping ausgeführt: {}\n".format(time.ctime()))
                 else:
                     client.write(parts[0], parts[1].lstrip(), True)
 
