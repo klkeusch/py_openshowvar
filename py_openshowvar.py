@@ -213,11 +213,11 @@ def run_shell(ip, port):
                     parts = data.split(',')
                     if len(parts) == 1:
                         extracted_var_value = client.read(data.strip(), False)
-                        f.write("Abgefragte Variable: {}, Wert: {} um {}\n".format(parts[0], extracted_var_value.strip("'b").encode(), time.ctime()))
+                        f.write("Abgefragte Variable: {}, Wert: {} um {}\n".format(parts[0], extracted_var_value, time.ctime()))
                     else:
                         client.write(parts[0], parts[1].lstrip(), False)
-                        print("\nWert von: {} auf {} gesetzt um {}\n".format(parts[0], parts[1], time.ctime()))
-                        f.write("Wert von: {} auf {} gesetzt um {}\n".format(parts[0], parts[1], time.ctime()))
+                        print("\nWert von: {} auf{} gesetzt um {}\n".format(parts[0], parts[1], time.ctime()))
+                        f.write("Wert von: {} auf{} gesetzt um {}\n".format(parts[0], parts[1], time.ctime()))
 
 
 
