@@ -157,7 +157,7 @@ def run_shell(ip, port):
             print('Verbindung konnte nicht hergestellt werden.')
             import sys
             sys.exit(-1)
-        print('\nVerbunden mit KRC:', end=' ')
+        print('\nVerbunden mit KRC: {}:{}'.format(ip, port), end=' ')
         client.read('$ROBNAME[]', False)
 
         @tl.job(interval=timedelta(seconds=25))
@@ -173,6 +173,7 @@ def run_shell(ip, port):
             data = input('\n======================================================================\n'
                          '============================| Menue |=================================\n'
                          '======================================================================\n'
+                         '============| Verbunden mit KRC: {}:{} |================\n'
                          '("var_name [, var_value]" - Abfrage Variable, var_value: Wert setzen)\n'
                          '("h" - Hilfe anzeigen)\n'
                          '("p" - Ping)\n'
@@ -180,7 +181,7 @@ def run_shell(ip, port):
                          '("c" - Ausgabefenster leeren)\n'
                          '("q" - Beenden)\n'
                          '======================================================================\n'
-                         'Eingabe: ')
+                         'Eingabe: '.format(ip, port))
 
             if data.lower() == 'q':
                 print('\nVerbindung getrennt.\n')
