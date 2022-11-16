@@ -161,7 +161,7 @@ def run_shell(ip, port):
         with open(filename_connection, 'a') as fc:
             client.read('$ROBNAME[]', False)
             print('\nVerbunden mit KRC: {}:{}'.format(ip, port), end=' ')
-            fc.write('\nVerbunden mit KRC: {}:{} um {}\n'.format(ip, port, time.ctime()))
+            fc.write('Verbunden mit KRC: {}:{} um {}\n'.format(ip, port, time.ctime()))
 
             @tl.job(interval=timedelta(seconds=25))
             def ping_robot():
@@ -210,11 +210,10 @@ def run_shell(ip, port):
                 elif data.lower() == 'pm':
                     print(ping_robot())
                 else:
-                    f.write("Benutzereingabe: {} um {}\n".format(data, time.ctime()))
                     parts = data.split(',')
                     if len(parts) == 1:
                         extracted_var_value = client.read(data.strip(), True)
-                        f.write("Abgefragte Variable: {}, Wert: {} um {}\n".format(extracted_var_value, data, time.ctime()))
+                        f.write("Abgefragte Variable: {}, Wert: {} um {}\n".format(data, extracted_var_value, time.ctime()))
                     else:
                         client.write(parts[0], parts[1].lstrip(), True)
 
