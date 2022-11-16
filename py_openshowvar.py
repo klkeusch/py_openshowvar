@@ -9,13 +9,15 @@ import random
 import socket
 import time
 
-
 from timeloop import Timeloop
 from datetime import timedelta
 
 tl = Timeloop()
 
-# f = open("kuka_output_{}.txt", "a" )
+
+def cls():
+    lambda: print("\033c", end='')
+
 
 __version__ = '1.1.7'
 ENCODING = 'UTF-8'
@@ -136,7 +138,6 @@ class OpenShowVar(object):
             return var_value
 
     def close(self):
-        time.sleep(2)
         self.sock.close()
 
 
@@ -164,10 +165,12 @@ def run_shell(ip, port):
             print('Erhalte Verbindung zu Roboter aufrecht: {}'.format(time.ctime()))
             client.ping
             f.write("Automatischer Ping ausgeführt: {}\n".format(time.ctime()))
+
         tl.start(block=False)
 
         while True:
             data = input('\nEingabe von var_name [, var_value]\n("p" - Ping)\n("q" - Beenden)\n')
+
             if data.lower() == 'q':
                 print('\nVerbindung getrennt.\n')
                 f.write("Verbindung getrennt: {}\n".format(time.ctime()))
@@ -177,6 +180,7 @@ def run_shell(ip, port):
                 print('\nPing ausgefuehrt\n')
                 f.write("Manueller Ping ausgeführt: {}\n".format(time.ctime()))
                 client.ping
+                cls()
             else:
                 parts = data.split(',')
                 if len(parts) == 1:
@@ -187,8 +191,8 @@ def run_shell(ip, port):
 
 
 if __name__ == '__main__':
-    ip = "172.31.1.147" # input('IP-Adresse des smartPAD: ')
-    port = "7000" # input('Port: ')
+    ip = "172.31.1.147"  # input('IP-Adresse des smartPAD: ')
+    port = "7000"  # input('Port: ')
     run_shell(ip, int(port))
 
 '''
