@@ -3,6 +3,7 @@ A Python port of KUKA VarProxy client (OpenShowVar).
 """
 
 from __future__ import print_function
+import os
 import sys
 import struct
 import random
@@ -16,7 +17,7 @@ tl = Timeloop()
 
 
 def cls():
-    lambda: print("\033c", end='')
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 
 __version__ = '1.1.7'
