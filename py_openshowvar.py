@@ -59,17 +59,17 @@ class OpenShowVar(object):
 
     ping = property(keep_alive)
 
-    def read(self, var, debug=False): # debug true -> false kk
+    def read(self, var, debug=True):
         if not isinstance(var, str):
-            raise Exception('Variablenname ist ein String')  # Var name is a string')
+            raise Exception('Variablenname ist ein String')
         else:
             self.varname = var if PY2 else var.encode(ENCODING)
         return self._read_var(debug)
 
-    def write(self, var, value, debug=False): # debug true -> false kk
+    def write(self, var, value, debug=True):
         if not (isinstance(var, str) and isinstance(value, str)):
             raise Exception(
-                'Variablenname und -wert müssen ein String sein.')  # Var name and its value should be string')
+                'Variablenname und -wert müssen ein String sein.')
         self.varname = var if PY2 else var.encode(ENCODING)
         self.value = value if PY2 else value.encode(ENCODING)
         return self._write_var(debug)
@@ -77,7 +77,7 @@ class OpenShowVar(object):
     def _read_var(self, debug):
         req = self._pack_read_req()
         self._send_req(req)
-        _value = self._read_rsp() # (debug) kk
+        _value = self._read_rsp(debug)
         if debug:
             print(_value)
         return _value
@@ -151,69 +151,72 @@ def run_shell(ip, port):
     cls()
     client = OpenShowVar(ip, port)
     filename = 'kuka_py_osv_log.txt'
+    filename_connection = 'kuka_py_osv_connection_log.txt'
 
     with open(filename, 'a') as f:
         if not client.can_connect:
             print('Verbindung konnte nicht hergestellt werden.')
             import sys
             sys.exit(-1)
-        print('\nVerbunden mit KRC: {}:{}'.format(ip, port), end=' ')
-        client.read('$ROBNAME[]', False)
+        with open(filename_connection) as fc:
+            client.read('$ROBNAME[]', False)
+            print('\nVerbunden mit KRC: {}:{}'.format(ip, port), end=' ')
+            fc.write('\nVerbunden mit KRC: {}:{} um {}\n'.format(ip, port, time.ctime()))
 
-        @tl.job(interval=timedelta(seconds=25))
-        def ping_robot():
-            latest_ping = ('\nLetzter automatischer Ping: {}\n'.format(time.ctime()))
-            client.ping
-            f.write("Automatischer Ping ausgeführt: {}\n".format(time.ctime()))
-            return latest_ping
-
-        tl.start(block=False)
-
-        while True:
-            data = input('\n======================================================================\n'
-                         '============================| Menue |=================================\n'
-                         '=============| Verbunden mit KRC: {}:{} |=================\n'
-                         '======================================================================\n'
-                         '("var_name [, var_value]" - Abfrage Variable, var_value: Wert setzen)\n'
-                         '("h" - Hilfe anzeigen)\n'
-                         '("p" - Ping)\n'
-                         '("pm" - Zeige letzten automatischen Ping)\n'
-                         '("c" - Ausgabefenster leeren)\n'
-                         '("q" - Beenden)\n'
-                         '======================================================================\n'
-                         'Eingabe: '.format(ip, port))
-
-            if data.lower() == 'q':
-                print('\nVerbindung getrennt.\n')
-                f.write("Verbindung getrennt: {}\n".format(time.ctime()))
-                client.close()
-                break
-            elif data.lower() == 'c':
-                print('\nAusgabefenster leeren...\n')
-                time.sleep(1)
-                cls()
-            elif data.lower() == 'h':
-                cls()
-                print('\nAbfrage von Variablen mit Eingabe von: "$OV_PRO" bzw. "SCHICHT"\n')
-                print('Setzen des Wertes einer Variable mit: "<var_name>, <var_value>", z. B. "SCHICHT, 80"\n')
-                print('Alle Vorgaenge und Werte werden in der Datei "{}"'.format(filename), 'im Programmordner gesichert.\n')
-                input_help = input('("b" - Beenden der Hilfe)\n')
-                if input_help.lower() == 'b':
-                    cls()
-            elif data.lower() == 'p':
-                print('\nPing ausgefuehrt\n')
-                f.write("Manueller Ping ausgeführt: {}\n".format(time.ctime()))
+            @tl.job(interval=timedelta(seconds=25))
+            def ping_robot():
+                latest_ping = ('\nLetzter automatischer Ping: {}\n'.format(time.ctime()))
                 client.ping
-            elif data.lower() == 'pm':
-                print(ping_robot())
-            else:
-                f.write("Benutzereingabe: {} um {}\n".format(data, time.ctime()))
-                parts = data.split(',')
-                if len(parts) == 1:
-                    val = client.read(data.strip(), True)
-                    f.write("Value: {} um {}\n".format(val, time.ctime()))
+                fc.write("Automatischer Ping ausgeführt: {}\n".format(time.ctime()))
+                return latest_ping
+
+            tl.start(block=False)
+
+            while True:
+                data = input('\n======================================================================\n'
+                             '============================| Menue |=================================\n'
+                             '=============| Verbunden mit KRC: {}:{} |=================\n'
+                             '======================================================================\n'
+                             '("var_name [, var_value]" - Abfrage Variable, var_value: Wert setzen)\n'
+                             '("h" - Hilfe anzeigen)\n'
+                             '("p" - Ping)\n'
+                             '("pm" - Zeige letzten automatischen Ping)\n'
+                             '("c" - Ausgabefenster leeren)\n'
+                             '("q" - Beenden)\n'
+                             '======================================================================\n'
+                             'Eingabe: '.format(ip, port))
+
+                if data.lower() == 'q':
+                    print('\nVerbindung getrennt.\n')
+                    fc.write("Verbindung getrennt: {}\n".format(time.ctime()))
+                    client.close()
+                    break
+                elif data.lower() == 'c':
+                    print('\nAusgabefenster leeren...\n')
+                    time.sleep(1)
+                    cls()
+                elif data.lower() == 'h':
+                    cls()
+                    print('\nAbfrage von Variablen mit Eingabe von: "$OV_PRO" bzw. "SCHICHT"\n')
+                    print('Setzen des Wertes einer Variable mit: "<var_name>, <var_value>", z. B. "SCHICHT, 80"\n')
+                    print('Alle Vorgaenge und Werte werden in der Datei "{}"'.format(filename), 'im Programmordner gesichert.\n')
+                    input_help = input('("b" - Beenden der Hilfe)\n')
+                    if input_help.lower() == 'b':
+                        cls()
+                elif data.lower() == 'p':
+                    print('\nPing ausgefuehrt\n')
+                    fc.write("Manueller Ping ausgeführt: {}\n".format(time.ctime()))
+                    client.ping
+                elif data.lower() == 'pm':
+                    print(ping_robot())
                 else:
-                    client.write(parts[0], parts[1].lstrip(), True)
+                    f.write("Benutzereingabe: {} um {}\n".format(data, time.ctime()))
+                    parts = data.split(',')
+                    if len(parts) == 1:
+                        extracted_var_value = client.read(data.strip(), True)
+                        f.write("Abgefragte Variable: {}, Wert: {} um {}\n".format(extracted_var_value, data, time.ctime()))
+                    else:
+                        client.write(parts[0], parts[1].lstrip(), True)
 
 
 if __name__ == '__main__':
