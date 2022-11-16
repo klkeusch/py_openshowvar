@@ -171,7 +171,12 @@ def run_shell(ip, port):
         tl.start(block=False)
 
         while True:
-            data = input('\nEingabe von var_name [, var_value]\n("c" - Ausgabefenster leeren\n("p" - Ping)\n("pm" - Zeige letzten automatischen Ping)\n("q" - Beenden)\n')
+            data = input('\n("var_name [, var_value]" - Eingabe der gewuenschten Variable)\n'
+                         '("c" - Ausgabefenster leeren)\n'
+                         '("p" - Ping)\n'
+                         '("pm" - Zeige letzten automatischen Ping)\n'
+                         '("q" - Beenden)\n'
+                         'Eingabe: ')
 
             if data.lower() == 'q':
                 print('\nVerbindung getrennt.\n')
@@ -187,7 +192,7 @@ def run_shell(ip, port):
                 f.write("Manueller Ping ausgeführt: {}\n".format(time.ctime()))
                 client.ping
             elif data.lower() == 'pm':
-                print(ping_robot)
+                print(ping_robot())
             else:
                 parts = data.split(',')
                 if len(parts) == 1:
@@ -195,7 +200,6 @@ def run_shell(ip, port):
                     f.write("Manueller Ping ausgeführt: {}\n".format(time.ctime()))
                 else:
                     client.write(parts[0], parts[1].lstrip(), True)
-
 
 
 if __name__ == '__main__':
