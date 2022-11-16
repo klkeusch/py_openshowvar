@@ -77,7 +77,7 @@ class OpenShowVar(object):
     def _read_var(self, debug):
         req = self._pack_read_req()
         self._send_req(req)
-        _value = self._read_rsp(debug)
+        _value = self._read_rsp() # (debug) kk
         if debug:
             print(_value)
         return _value
@@ -172,8 +172,8 @@ def run_shell(ip, port):
         while True:
             data = input('\n======================================================================\n'
                          '============================| Menue |=================================\n'
+                         '=============| Verbunden mit KRC: {}:{} |=================\n'
                          '======================================================================\n'
-                         '============| Verbunden mit KRC: {}:{} |================\n'
                          '("var_name [, var_value]" - Abfrage Variable, var_value: Wert setzen)\n'
                          '("h" - Hilfe anzeigen)\n'
                          '("p" - Ping)\n'
@@ -210,7 +210,8 @@ def run_shell(ip, port):
                 f.write("Benutzereingabe: {} um {}\n".format(data, time.ctime()))
                 parts = data.split(',')
                 if len(parts) == 1:
-                    client.read(data.strip(), True)
+                    val = client.read(data.strip(), True)
+                    f.write("Value: {} um {}\n".format(val, time.ctime()))
                 else:
                     client.write(parts[0], parts[1].lstrip(), True)
 
