@@ -163,7 +163,7 @@ def run_shell(ip, port):
 
         @tl.job(interval=timedelta(seconds=25))
         def ping_robot():
-            latest_ping = ('Letzter automatischer Ping: {}'.format(time.ctime()))
+            latest_ping = ('\nLetzter automatischer Ping: {}\n'.format(time.ctime()))
             client.ping
             f.write("Automatischer Ping ausgeführt: {}\n".format(time.ctime()))
             return latest_ping
@@ -171,11 +171,15 @@ def run_shell(ip, port):
         tl.start(block=False)
 
         while True:
-            data = input('\n("var_name [, var_value]" - Eingabe der gewuenschten Variable)\n'
+            data = input('\n============================================================\n'
+                         '***| Menue |***\n'
+                         '============================================================\n'
+                         '("var_name [, var_value]" - Eingabe der gewuenschten Variable)\n'
                          '("c" - Ausgabefenster leeren)\n'
                          '("p" - Ping)\n'
                          '("pm" - Zeige letzten automatischen Ping)\n'
                          '("q" - Beenden)\n'
+                         '============================================================\n'
                          'Eingabe: ')
 
             if data.lower() == 'q':
