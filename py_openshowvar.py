@@ -212,22 +212,13 @@ def run_shell(ip, port):
                 else:
                     parts = data.split(',')
                     if len(parts) == 1:
-                        extracted_var_value = client.read(data.strip(), True)
-                        f.write("Abgefragte Variable: {}, Wert: {} um {}\n".format(data, extracted_var_value, time.ctime()))
+                        extracted_var_value = client.read(data.strip(), False)
+                        f.write("Abgefragte Variable: {}, Wert: {} um {}\n".format(data, extracted_var_value.strip("b'"), time.ctime()))
                     else:
-                        client.write(parts[0], parts[1].lstrip(), True)
+                        client.write(parts[0], parts[1].lstrip(), False)
 
 
 if __name__ == '__main__':
-    ip = "172.31.1.147"  # input('IP-Adresse des smartPAD: ')
-    port = "7000"  # input('Port: ')
+    ip = input('IP-Adresse: ')
+    port = input('Port: ')
     run_shell(ip, int(port))
-
-'''
-!    Big-ending byte ordering will be used
-H    self.msg_id will be packed as a two-byte unsigned short
-H    req_len will be packed as above
-B    flag will be packed as a one-byte unsigned char
-H    var_name_len will be packed as a two-byte unsigned short
-12s  self.varname will be packed as a 12-byte string
-'''
