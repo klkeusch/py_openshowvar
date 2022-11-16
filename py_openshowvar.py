@@ -163,14 +163,15 @@ def run_shell(ip, port):
 
         @tl.job(interval=timedelta(seconds=25))
         def ping_robot():
-            print('Erhalte Verbindung zu Roboter aufrecht: {}'.format(time.ctime()))
+            latest_ping = ('Letzter automatischer Ping: {}'.format(time.ctime()))
             client.ping
             f.write("Automatischer Ping ausgeführt: {}\n".format(time.ctime()))
+            return latest_ping
 
         tl.start(block=False)
 
         while True:
-            data = input('\nEingabe von var_name [, var_value]\n("c" - Ausgabefenster leeren\n("p" - Ping)\n("q" - Beenden)\n')
+            data = input('\nEingabe von var_name [, var_value]\n("c" - Ausgabefenster leeren\n("p" - Ping)\n("pm" - Zeige letzten automatischen Ping)\n("q" - Beenden)\n')
 
             if data.lower() == 'q':
                 print('\nVerbindung getrennt.\n')
@@ -185,6 +186,8 @@ def run_shell(ip, port):
                 print('\nPing ausgefuehrt\n')
                 f.write("Manueller Ping ausgeführt: {}\n".format(time.ctime()))
                 client.ping
+            elif data.lower() == 'pm':
+                print(ping_robot)
             else:
                 parts = data.split(',')
                 if len(parts) == 1:
