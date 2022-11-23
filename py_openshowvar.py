@@ -13,8 +13,8 @@ import time
 from timeloop import Timeloop
 from datetime import timedelta
 
-from rich.console import Console
-from rich.table import Table
+# from rich.console import Console
+# from rich.table import table
 
 tl = Timeloop()
 
@@ -61,14 +61,6 @@ class OpenShowVar(object):
         self._send_req(req)
 
     ping = property(keep_alive)
-
-    def get_value_laserpower(self, var='ADAPTLASERPOWER2'):
-        self.varname = var if PY2 else var.encode(ENCODING)
-        debug = False
-        req = self._pack_read_req()
-        self._send_req(req)
-
-    val_laser_power = property(get_value_laserpower)
 
     def read(self, var, debug=True):
         if not isinstance(var, str):
@@ -159,6 +151,9 @@ First draft for a console application
 
 
 def run_shell(ip, port):
+    # Second command line window
+    os.system("start /B start cmd.exe @cmd /k ping 8.8.8.8 -t ")
+
     cls()
     client = OpenShowVar(ip, port)
     filename = 'kuka_py_osv_log.txt'
@@ -183,13 +178,11 @@ def run_shell(ip, port):
 
             @tl.job(interval=timedelta(seconds=10))
             def val_laser_power():
-                latest_val_laser_power = ('\nLetzter Wert fuer ADAPTLASERPOWER2: {}\n'.format(time.ctime()))
-                # client.val_laser_power
-                # extracted_var_value = client.read(data.strip(), True)
-                extracted_var_value = client.val_laser_power
-                f.write("Abgefragte Variable: Laserpower, Wert: {} um {}\n".format(extracted_var_value,
+                cyclic_value = client.read("ADAPTLASERPOWER2", True)
+                f.write("Abgefragte Variable: ADAPTLASERPOWER2, Wert: {} um {}\n".format(cyclic_value,
                                                                            time.ctime()))
-                return latest_val_laser_power
+
+
 
             tl.start(block=False)
 
