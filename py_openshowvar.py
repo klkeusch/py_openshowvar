@@ -13,6 +13,9 @@ import time
 from timeloop import Timeloop
 from datetime import timedelta
 
+from rich.console import Console
+from rich.table import Table
+
 tl = Timeloop()
 
 
@@ -58,6 +61,14 @@ class OpenShowVar(object):
         self._send_req(req)
 
     ping = property(keep_alive)
+
+    def get_value_laserpower(self, var='ADAPTLASERPOWER2'):
+        self.varname = var if PY2 else var.encode(ENCODING)
+        debug = False
+        req = self._pack_read_req()
+        self._send_req(req)
+
+    val_laser_power = property(get_value_laserpower)
 
     def read(self, var, debug=True):
         if not isinstance(var, str):
@@ -170,6 +181,16 @@ def run_shell(ip, port):
                 fc.write("Automatischer Ping ausgeführt: {}\n".format(time.ctime()))
                 return latest_ping
 
+            @tl.job(interval=timedelta(seconds=10))
+            def val_laser_power():
+                latest_val_laser_power = ('\nLetzter Wert fuer ADAPTLASERPOWER2: {}\n'.format(time.ctime()))
+                # client.val_laser_power
+                # extracted_var_value = client.read(data.strip(), True)
+                extracted_var_value = client.val_laser_power
+                f.write("Abgefragte Variable: Laserpower, Wert: {} um {}\n".format(extracted_var_value,
+                                                                           time.ctime()))
+                return latest_val_laser_power
+
             tl.start(block=False)
 
             while True:
@@ -228,3 +249,18 @@ if __name__ == '__main__':
     ip = "172.31.1.147" # input('IP-Adresse: ')
     port = "7000" # input('Port: ')
     run_shell(ip, int(port))
+
+
+#table = Table(title="Star Wars Movies")
+
+#table.add_column("Released", justify="right", style="cyan", no_wrap=True)
+#table.add_column("Title", style="magenta")
+#table.add_column("Box Office", justify="right", style="green")
+
+#table.add_row("Dec 20, 2019", "Star Wars: The Rise of Skywalker", "$952,110,690")
+#table.add_row("May 25, 2018", "Solo: A Star Wars Story", "$393,151,347")
+#table.add_row("Dec 15, 2017", "Star Wars Ep. V111: The Last Jedi", "$1,332,539,889")
+#table.add_row("Dec 16, 2016", "Rogue One: A Star Wars Story", "$1,332,439,889")
+
+console = Console()
+console.print(table)
